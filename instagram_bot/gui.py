@@ -1,36 +1,48 @@
-import tkinter as tk
+import customtkinter
 from tkinter import messagebox
 from bot import InstagramBot
 
-class InstagramBotGUI:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Instagram Account Creator")
+# Set the appearance mode and default color theme
+customtkinter.set_appearance_mode("dark")
+customtkinter.set_default_color_theme("blue")
 
-        # Create and place labels and entry fields
-        self.email_label = tk.Label(root, text="Email:")
-        self.email_label.grid(row=0, column=0, padx=10, pady=5)
-        self.email_entry = tk.Entry(root)
-        self.email_entry.grid(row=0, column=1, padx=10, pady=5)
+class InstagramBotGUI(customtkinter.CTk):
+    def __init__(self):
+        super().__init__()
 
-        self.fullname_label = tk.Label(root, text="Full Name:")
-        self.fullname_label.grid(row=1, column=0, padx=10, pady=5)
-        self.fullname_entry = tk.Entry(root)
-        self.fullname_entry.grid(row=1, column=1, padx=10, pady=5)
+        # Configure window
+        self.title("Instagram Account Creator")
+        self.geometry("400x380")
 
-        self.username_label = tk.Label(root, text="Username:")
-        self.username_label.grid(row=2, column=0, padx=10, pady=5)
-        self.username_entry = tk.Entry(root)
-        self.username_entry.grid(row=2, column=1, padx=10, pady=5)
+        # Create a frame for the widgets
+        self.frame = customtkinter.CTkFrame(self)
+        self.frame.pack(pady=20, padx=60, fill="both", expand=True)
 
-        self.password_label = tk.Label(root, text="Password:")
-        self.password_label.grid(row=3, column=0, padx=10, pady=5)
-        self.password_entry = tk.Entry(root, show="*")
-        self.password_entry.grid(row=3, column=1, padx=10, pady=5)
+        # Title Label
+        self.title_label = customtkinter.CTkLabel(self.frame, text="Create Instagram Account", font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.title_label.pack(pady=12, padx=10)
 
-        # Create and place the create account button
-        self.create_button = tk.Button(root, text="Create Account", command=self.create_account)
-        self.create_button.grid(row=4, column=0, columnspan=2, pady=10)
+        # Entry fields
+        self.email_entry = customtkinter.CTkEntry(self.frame, placeholder_text="Email")
+        self.email_entry.pack(pady=12, padx=10)
+
+        self.fullname_entry = customtkinter.CTkEntry(self.frame, placeholder_text="Full Name")
+        self.fullname_entry.pack(pady=12, padx=10)
+
+        self.username_entry = customtkinter.CTkEntry(self.frame, placeholder_text="Username")
+        self.username_entry.pack(pady=12, padx=10)
+
+        self.password_entry = customtkinter.CTkEntry(self.frame, placeholder_text="Password", show="*")
+        self.password_entry.pack(pady=12, padx=10)
+
+        # Create account button
+        self.create_button = customtkinter.CTkButton(self.frame, text="Create Account", command=self.create_account)
+        self.create_button.pack(pady=12, padx=10)
+
+        # Disclaimer
+        self.disclaimer_label = customtkinter.CTkLabel(self.frame, text="Note: Automating account creation is against Instagram's terms of service.\nThis bot is for educational purposes and may not succeed.", font=customtkinter.CTkFont(size=9), text_color="gray")
+        self.disclaimer_label.pack(pady=(10, 0), padx=10)
+
 
     def create_account(self):
         email = self.email_entry.get()
@@ -43,14 +55,21 @@ class InstagramBotGUI:
             return
 
         try:
+            self.create_button.configure(state="disabled", text="Creating...")
+            self.update_idletasks() # Update the GUI to show the change
+
             bot = InstagramBot()
             bot.create_account(email, fullname, username, password)
             bot.close_browser()
+
             messagebox.showinfo("Success", "Account created successfully!")
+
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
+        finally:
+            self.create_button.configure(state="normal", text="Create Account")
+
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = InstagramBotGUI(root)
-    root.mainloop()
+    app = InstagramBotGUI()
+    app.mainloop()
